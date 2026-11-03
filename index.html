@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#090b12">
+<title>BKON STREAM</title>
+<style>
+:root{--bg:#090b12;--panel:#151925;--muted:#9ba4b5;--gold:#f2c45f;--line:#ffffff1b}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:#fff;font-family:Inter,system-ui,Arial,sans-serif}button{font:inherit;cursor:pointer}
+.app{height:100dvh;max-width:560px;margin:auto;display:flex;flex-direction:column;background:#0b0e16;position:relative;overflow:hidden}
+header{height:58px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--line);background:#0b0e16;z-index:2}
+.logo{font-weight:950;letter-spacing:1.7px;font-size:19px}.logo span{color:var(--gold)}.head-actions{display:flex;gap:9px}.iconbtn{background:#1b2130;border:1px solid var(--line);color:#fff;border-radius:12px;width:37px;height:37px;font-size:17px}
+.tabs{display:flex;justify-content:center;gap:24px;height:43px;align-items:center;flex:none;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.tabs button{border:0;background:none;color:inherit;padding:10px 2px}.tabs button.active{color:#fff;font-weight:800;border-bottom:2px solid var(--gold)}
+main{flex:1;overflow-y:auto;scrollbar-width:none}.feed-card{position:relative;min-height:calc(100dvh - 160px);height:calc(100dvh - 160px);max-height:850px;background:#202a35;border-bottom:1px solid var(--line);overflow:hidden}
+.video-wrap{position:absolute;inset:0;background:linear-gradient(145deg,#1d3a43,#7a6c4b 55%,#17222d);display:flex;align-items:center;justify-content:center}
+.video-wrap video{width:100%;height:100%;object-fit:cover;background:#18232b}
+.video-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px;background:radial-gradient(circle at 70% 25%,#d2a55c55,transparent 30%),linear-gradient(145deg,#244b50,#18212c 60%,#806b45)}
+.fallback-title{font-size:clamp(27px,7vw,42px);font-weight:950;line-height:1.05;letter-spacing:-1.5px;text-shadow:0 4px 18px #0008}.fallback-title small{display:block;font-size:11px;letter-spacing:3px;color:#f4d58e;margin-bottom:10px}
+.video-shade{position:absolute;inset:35% 0 0;background:linear-gradient(transparent,#0009 75%,#000c);pointer-events:none}
+.video-meta{position:absolute;left:16px;right:76px;bottom:20px;z-index:1;text-shadow:0 2px 6px #000}
+.creator{font-size:14px;font-weight:800;margin-bottom:8px}.creator em{font-style:normal;color:var(--gold);font-size:10px;margin-left:5px}.caption{font-size:13px;line-height:1.45;margin-bottom:10px}.tags{font-size:12px;color:#f3d68e}
+.actions{position:absolute;right:12px;bottom:24px;z-index:2;display:flex;flex-direction:column;gap:17px;align-items:center}
+.action{display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff;font-size:11px;text-shadow:0 2px 5px #000;border:0;background:none;padding:0;min-width:42px}
+.action .bubble{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#101722a8;border:1px solid #ffffff35;font-size:20px;backdrop-filter:blur(6px)}
+.action.liked .bubble{color:#ff6b83}.action:active .bubble{transform:scale(.92)}
+.bottomnav{height:60px;flex:none;display:flex;justify-content:space-around;align-items:center;border-top:1px solid var(--line);background:#0b0e16;z-index:3}
+.navitem{border:0;background:none;color:#9ba4b5;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;min-width:55px}.navitem b{font-size:20px;font-weight:500}.navitem.active{color:var(--gold)}
+.create{background:linear-gradient(90deg,#f2c45f,#fff0b7,#f2c45f)!important;color:#151923!important;border-radius:9px!important;width:43px;height:28px!important;font-weight:900!important;font-size:22px!important;display:grid;place-items:center}
+.screen{display:none;padding:18px;min-height:100%;}.screen.active{display:block}
+.screen h2{font-size:23px;margin:8px 0 5px}.sub{color:var(--muted);font-size:13px;line-height:1.5}
+.search{width:100%;padding:13px 14px;border-radius:13px;background:#171d2a;border:1px solid var(--line);color:white;margin:17px 0}
+.topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.topic{border-radius:15px;min-height:105px;padding:14px;display:flex;align-items:end;font-weight:800;background:linear-gradient(145deg,#35535a,#18232d)}.topic:nth-child(2){background:linear-gradient(145deg,#725338,#30231e)}.topic:nth-child(3){background:linear-gradient(145deg,#374e77,#1c2539)}.topic:nth-child(4){background:linear-gradient(145deg,#476b4e,#1b2d22)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:15px;margin:15px 0}
+.primary{width:100%;padding:14px;border:0;border-radius:13px;background:var(--gold);color:#171923;font-weight:900}
+.secondary{padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:#20283a;color:#fff;font-weight:700}
+input[type=file]{display:none}.preview{width:100%;max-height:360px;border-radius:14px;background:#080a10;margin:12px 0;display:none}
+.field{width:100%;background:#0d111b;border:1px solid var(--line);border-radius:12px;padding:12px;color:white;margin:8px 0}
+.notice{font-size:11px;color:#aeb8c8;line-height:1.5}
+.profile-head{display:flex;align-items:center;gap:14px;margin:22px 0}.avatar{width:65px;height:65px;border-radius:50%;background:linear-gradient(135deg,#f2c45f,#7b4d32);display:grid;place-items:center;color:#161923;font-weight:950;font-size:22px}
+.stats{display:flex;gap:20px;margin:20px 0}.stats strong{display:block;font-size:18px}.stats span{font-size:11px;color:var(--muted)}
+.toast{position:absolute;bottom:74px;left:50%;transform:translateX(-50%);background:#20283a;padding:10px 14px;border-radius:12px;font-size:12px;z-index:8;opacity:0;pointer-events:none;transition:.2s;white-space:nowrap}
+.modal{position:absolute;inset:0;background:#000b;z-index:9;display:none;align-items:end}.modal.show{display:flex}.sheet{background:#151b29;border-radius:22px 22px 0 0;padding:20px;width:100%;max-height:75%;overflow:auto}.sheet h3{margin:0 0 12px}.comment{padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+@media(min-width:560px){body{background:#05070b}.app{border-left:1px solid #ffffff15;border-right:1px solid #ffffff15}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">BKON <span>STREAM</span></div><div class="head-actions"><button class="iconbtn" id="searchBtn" aria-label="Search">⌕</button><button class="iconbtn" id="inboxBtn" aria-label="Inbox">✉</button></div></header>
+<div class="tabs" id="feedTabs"><button class="active" data-feed="for-you">For You</button><button data-feed="following">Following</button></div>
+<main id="main">
+<section id="feedScreen" class="screen active" style="padding:0">
+ <article class="feed-card">
+  <div class="video-wrap" id="videoWrap">
+   <div class="video-fallback" id="fallback"><div class="fallback-title"><small>BKON STREAM ORIGINAL</small>Ideas that<br>move you.</div></div>
+   <video id="demoVideo" playsinline muted loop preload="metadata" poster=""></video>
+  </div>
+  <div class="video-shade"></div>
+  <div class="video-meta"><div class="creator">@bkonstream <em>CREATOR</em></div><div class="caption" id="caption">Welcome to BKON STREAM — a place for creativity, learning and positive ideas.</div><div class="tags">#BKONSTREAM #Ideas #Create</div></div>
+  <div class="actions">
+   <button class="action" id="likeBtn"><span class="bubble">♥</span><span id="likeCount">128</span></button>
+   <button class="action" id="commentBtn"><span class="bubble">●</span><span>Comments</span></button>
+   <button class="action" id="shareBtn"><span class="bubble">↗</span><span>Share</span></button>
+   <button class="action" id="reportBtn"><span class="bubble">⋯</span><span>Report</span></button>
+  </div>
+ </article>
+</section>
+<section id="discoverScreen" class="screen"><h2>Discover</h2><div class="sub">Find topics and creators you enjoy.</div><input class="search" id="searchInput" placeholder="Search topics or creators"><div class="topic-grid"><div class="topic">Learning</div><div class="topic">Motivation</div><div class="topic">Technology</div><div class="topic">Creativity</div><div class="topic">Science</div><div class="topic">Lifestyle</div></div></section>
+<section id="uploadScreen" class="screen"><h2>Create a video</h2><div class="sub">Choose a video from your phone to preview your first post.</div><div class="panel"><label class="primary" for="videoFile" style="display:block;text-align:center;cursor:pointer">＋ Choose video</label><input id="videoFile" type="file" accept="video/*"><video id="preview" class="preview" controls playsinline></video><input class="field" id="videoCaption" maxlength="180" placeholder="Write a caption..."><button class="primary" id="previewPost">Preview post</button><p class="notice">Prototype note: this previews a video on this device only. It does not upload or publish it to other people yet. Online publishing will be added after we connect secure accounts, storage and moderation.</p></div></section>
+<section id="inboxScreen" class="screen"><h2>Inbox</h2><div class="panel"><strong>Coming in a later version</strong><p class="sub">Notifications and safe creator interactions will be added after accounts and moderation are ready. Private messaging is not enabled in this first prototype.</p></div></section>
+<section id="profileScreen" class="screen"><h2>Profile</h2><div class="profile-head"><div class="avatar">BK</div><div><strong>BKON STREAM</strong><div class="sub">@yourusername</div></div></div><div class="stats"><div><strong>0</strong><span>Posts</span></div><div><strong>0</strong><span>Followers</span></div><div><strong>0</strong><span>Following</span></div></div><div class="panel"><strong>Your creator space</strong><p class="sub">Your profile, uploaded videos and followers will appear here once accounts are connected.</p></div><button class="secondary" id="safetyBtn">Community safety</button></section>
+</main>
+<nav class="bottomnav">
+<button class="navitem active" data-screen="feedScreen"><b>⌂</b>Home</button>
+<button class="navitem" data-screen="discoverScreen"><b>⌕</b>Discover</button>
+<button class="navitem" data-screen="uploadScreen"><b class="create">＋</b>Create</button>
+<button class="navitem" data-screen="inboxScreen"><b>♡</b>Inbox</button>
+<button class="navitem" data-screen="profileScreen"><b>◉</b>Profile</button>
+</nav>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="sheet"><h3 id="modalTitle">Comments</h3><div id="modalBody"></div><button class="secondary" style="width:100%;margin-top:14px" id="closeModal">Close</button></div></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);let liked=false,selectedVideo=null;
+function toast(msg){$('toast').textContent=msg;$('toast').style.opacity=1;clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').style.opacity=0,1900)}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.navitem').forEach(b=>b.classList.toggle('active',b.dataset.screen===id));$('feedTabs').style.display=id==='feedScreen'?'flex':'none';$('main').scrollTop=0}
+document.querySelectorAll('.navitem').forEach(b=>b.onclick=()=>showScreen(b.dataset.screen));
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');toast(b.dataset.feed==='following'?'Following feed will appear when you follow creators':'Showing recommended videos')});
+$('likeBtn').onclick=()=>{liked=!liked;$('likeBtn').classList.toggle('liked',liked);$('likeCount').textContent=liked?'129':'128'};
+$('commentBtn').onclick=()=>openModal('Comments','<p class="sub">Comments will be available when community accounts and moderation are connected.</p>');
+$('shareBtn').onclick=async()=>{if(navigator.share){try{await navigator.share({title:'BKON STREAM',text:'Check out BKON STREAM'});}catch(e){}}else toast('Sharing will be enabled when the app is published.')};
+$('reportBtn').onclick=()=>openModal('Report content','<p class="sub">If content is harmful or inappropriate, report it. In this prototype, reports are a demonstration and are not sent to a moderation team.</p><button class="primary" id="demoReport">Report this video</button>');
+$('searchBtn').onclick=()=>{showScreen('discoverScreen');$('searchInput').focus()};$('inboxBtn').onclick=()=>showScreen('inboxScreen');
+$('safetyBtn').onclick=()=>openModal('Community safety','<p class="sub">BKON STREAM is being designed with privacy, respectful participation, reporting and content review in mind. Public uploads and direct messages will not be enabled until safety and moderation controls are in place.</p>');
+function openModal(title,body){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('modal').classList.add('show');let r=$('demoReport');if(r)r.onclick=()=>{ $('modalBody').innerHTML='<p class="sub">Demo report recorded on this screen only. No report was sent.</p>';}}
+$('closeModal').onclick=()=>$('modal').classList.remove('show');$('modal').onclick=e=>{if(e.target===$('modal'))$('modal').classList.remove('show')};
+$('videoFile').onchange=e=>{const f=e.target.files[0];if(!f)return;if(!f.type.startsWith('video/')){toast('Please choose a video file');return}if(selectedVideo)URL.revokeObjectURL(selectedVideo);selectedVideo=URL.createObjectURL(f);$('preview').src=selectedVideo;$('preview').style.display='block';toast('Video ready for local preview')};
+$('previewPost').onclick=()=>{if(!selectedVideo){toast('Choose a video first');return}const cap=$('videoCaption').value.trim();$('demoVideo').pause();$('demoVideo').src=selectedVideo;$('demoVideo').controls=true;$('demoVideo').style.display='block';$('fallback').style.display='none';$('caption').textContent=cap||'A new video preview from BKON STREAM.';showScreen('feedScreen');$('demoVideo').play().catch(()=>{});toast('Your local video preview is ready')};
+// Use a small public-domain sample video as the initial demo where network access permits.
+$('demoVideo').src='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+$('demoVideo').oncanplay=()=>$('fallback').style.display='none';
+$('demoVideo').onerror=()=>{$('fallback').style.display='flex'};
+$('demoVideo').play().catch(()=>{});
+</script>
+</body>
+</html>
